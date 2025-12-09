@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game - Silver</title>
+<title>Eska's Multiplayer Guessing Game - Metallic Shine</title>
 <style>
 :root {
     --bg-light: #e6e6e6;
     --text-color: #222;
-    --metal-gradient: linear-gradient(145deg, #ffffff, #cfd1d3, #a8a9ab);
+    --metal-gradient: linear-gradient(145deg, #ffffff, #cfd1d3, #a8a8ab);
     --button-gradient: linear-gradient(145deg, #d1d3d6, #a9abb0);
     --tile-bg: linear-gradient(145deg, #f0f0f0, #c8c8c8, #a0a0a0);
     --tile-current-border: #1e90ff;
@@ -34,65 +34,89 @@ header {
     width:100%;
     box-shadow: 0 6px 14px var(--shadow);
     border-bottom:2px solid #999;
+    animation: shine 4s linear infinite;
 }
 h1 { margin:0; font-size:2rem; font-weight:bold; text-shadow: 1px 1px 2px #aaa; }
 .container { padding:20px; width:95%; max-width:600px; }
 .input-row { margin-top:15px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
 input[type="number"], input[type="text"], select {
-    font-size:1.3rem;
-    padding:14px;
-    flex:1 1 140px;
-    min-width:130px;
-    border-radius:16px;
+    font-size:1.5rem;
+    padding:18px;
+    flex:1 1 160px;
+    min-width:140px;
+    border-radius:20px;
     border:2px solid #999;
     background: var(--metal-gradient);
     box-shadow: 3px 3px 6px var(--shadow) inset;
+    animation: shine 6s linear infinite;
 }
 input[type="number"] { min:1; step:1; } 
 button {
-    font-size:1.3rem;
-    padding:18px 22px;
+    font-size:1.5rem;
+    padding:22px 26px;
     cursor:pointer;
     border:none;
     background: var(--button-gradient);
     color:#222;
-    border-radius:16px;
-    flex:1 1 140px;
-    min-width:130px;
+    border-radius:20px;
+    flex:1 1 160px;
+    min-width:140px;
     font-weight:bold;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 3px 3px 10px var(--shadow);
+    animation: shine 5s linear infinite;
 }
-button:hover { transform:scale(1.07); box-shadow: 4px 4px 12px var(--shadow); }
-.feedback { margin-top:12px; font-weight:bold; font-size:1.3rem; text-align:center; min-height:1.5em; }
-.stats { margin-top:10px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1.1rem; }
-#playerTiles { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:25px; }
+button:hover { transform:scale(1.08); box-shadow: 4px 4px 14px var(--shadow); }
+.feedback { margin-top:12px; font-weight:bold; font-size:1.4rem; text-align:center; min-height:1.5em; }
+.stats { margin-top:12px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1.2rem; }
+#playerTiles { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-top:25px; }
 .player-tile {
-    flex:1 1 130px;
-    min-width:110px;
-    max-width:160px;
-    padding:22px;
-    border-radius:20px;
+    flex:1 1 140px;
+    min-width:120px;
+    max-width:180px;
+    padding:28px;
+    border-radius:24px;
     background: var(--tile-bg);
     font-weight:bold;
     text-align:center;
-    font-size:1.25rem;
+    font-size:1.3rem;
     cursor:pointer;
     user-select:none;
-    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
-    box-shadow: 3px 3px 12px var(--shadow);
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s, background 0.3s;
+    box-shadow: 3px 3px 14px var(--shadow);
+    animation: shine 6s linear infinite;
 }
-.player-tile.current { border:3px solid var(--tile-current-border); transform:scale(1.06);}
-.player-tile.winner { background: var(--correct); color:#fff; transform:scale(1.07); box-shadow: 4px 4px 14px var(--shadow);}
+.player-tile.current { 
+    border:4px solid var(--tile-current-border); 
+    transform:scale(1.08);
+    box-shadow: 0 0 18px #1e90ff, 3px 3px 14px var(--shadow);
+}
+.player-tile.winner { background: var(--correct); color:#fff; transform:scale(1.08); box-shadow: 4px 4px 16px var(--shadow);}
+.player-tile.flash {
+    animation: flash 0.8s ease-in-out;
+}
+@keyframes glow {
+    0% { box-shadow: 0 0 8px #1e90ff, 3px 3px 14px var(--shadow); }
+    100% { box-shadow: 0 0 24px #1e90ff, 3px 3px 14px var(--shadow); }
+}
+@keyframes flash {
+    0%,100% { transform: scale(1.1); background: #cfd1d3; }
+    50% { transform: scale(1.2); background: #ffffff; }
+}
+@keyframes shine {
+    0% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+    100% { background-position:0% 50%; }
+}
 table { width:100%; margin-top:20px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:14px; }
-th, td { border:1px solid #999; padding:12px; text-align:center; font-size:1.05rem; }
+th, td { border:1px solid #999; padding:14px; text-align:center; font-size:1.1rem; }
 th { background: linear-gradient(145deg, #d4d4d4, #a8a8a8); color:#222; font-weight:bold; }
 tr.current-row { background: #d0ebff; font-weight:bold; }
 tr.winner-row { background: var(--correct); color:#fff; font-weight:bold; }
 @media(max-width:500px){
-    input[type="number"], input[type="text"], select, button { font-size:1.1rem; padding:12px; min-width:100px; }
-    .player-tile { font-size:1.1rem; padding:18px; min-width:90px; }
-    table th, table td { font-size:0.95rem; padding:8px; }
+    input[type="number"], input[type="text"], select, button { font-size:1.3rem; padding:16px; min-width:120px; }
+    .player-tile { font-size:1.2rem; padding:24px; min-width:100px; }
+    table th, table td { font-size:1rem; padding:10px; }
 }
 </style>
 </head>
@@ -103,7 +127,7 @@ tr.winner-row { background: var(--correct); color:#fff; font-weight:bold; }
 </header>
 
 <div class="container">
-<input type="text" id="playerNames" placeholder="Enter player names, e.g. Alice,Bob,Charlie">
+<input type="text" id="playerNames" placeholder="Enter player with commas">
 <select id="difficulty">
     <option value="10">Easy (1-10)</option>
     <option value="50">Medium (1-50)</option>
@@ -143,6 +167,7 @@ let attempts, timerInterval, secondsElapsed, maxNumber;
 let players=[], currentPlayerIndex=0, scores=[], winnerDeclared=false;
 let playerSecrets={}, playerAttempts={};
 
+// HTML elements
 const playerNamesInput = document.getElementById("playerNames");
 const guessInput = document.getElementById("guessInput");
 const guessBtn = document.getElementById("guessBtn");
@@ -155,13 +180,13 @@ const difficultySelect = document.getElementById("difficulty");
 const scoreboardBody = document.querySelector("#scoreboard tbody");
 const playerTilesDiv = document.getElementById("playerTiles");
 
+// initialize players
 function initializePlayers() {
     const names = playerNamesInput.value.split(',').map(n=>n.trim()).filter(n=>n);
     if(names.length<1){ alert("Enter at least 1 player!"); return false; }
     players = names;
     playerNamesInput.disabled = true;
     difficultySelect.disabled = true;
-
     maxNumber = parseInt(difficultySelect.value);
     players.forEach(p=>{
         playerSecrets[p]=Math.floor(Math.random()*maxNumber)+1;
@@ -170,11 +195,11 @@ function initializePlayers() {
     return true;
 }
 
+// start round / rollover
 function startRound(){
     if(players.length===0 && !initializePlayers()) return;
 
     currentPlayerIndex=0;
-    winnerDeclared=false;
     attempts=0;
     secondsElapsed=0;
 
@@ -186,19 +211,29 @@ function startRound(){
     clearInterval(timerInterval);
     timerInterval=setInterval(()=>{ secondsElapsed++; timerSpan.textContent="Time: "+secondsElapsed+"s"; },1000);
 
-    renderPlayerTiles();
+    // reset secrets for rollover if round completed
+    players.forEach(p=>{
+        if(playerSecrets[p]===0) playerSecrets[p]=Math.floor(Math.random()*maxNumber)+1;
+        playerAttempts[p]=0;
+    });
+
+    renderPlayerTiles(true);
     updateScoreboard();
 }
 
-function renderPlayerTiles(){
+// render tiles
+function renderPlayerTiles(flash=false){
     playerTilesDiv.innerHTML="";
     players.forEach((p,i)=>{
         const div=document.createElement("div");
         div.className="player-tile"+(i===currentPlayerIndex?" current":"");
         div.textContent=p;
-        if(playerSecrets[p]===0) div.classList.add("winner");
+        if(flash && i===currentPlayerIndex) {
+            div.classList.add("flash");
+            setTimeout(()=>div.classList.remove("flash"),800);
+        }
         div.addEventListener("click",()=>{ 
-            if(i!==currentPlayerIndex || playerSecrets[p]===0) return;
+            if(i!==currentPlayerIndex) return;
             document.querySelector(".player-tile.current")?.classList.remove("current");
             div.classList.add("current");
         });
@@ -206,36 +241,21 @@ function renderPlayerTiles(){
     });
 }
 
-startBtn.addEventListener("click", startRound);
-
+// start and restart
+startBtn.addEventListener("click", ()=>startRound());
 restartBtn.addEventListener("click", ()=>{
     clearInterval(timerInterval);
-    attempts=0;
-    secondsElapsed=0;
-    winnerDeclared=false;
-    players=[];
-    scores=[];
-    playerSecrets={};
-    playerAttempts={};
-    currentPlayerIndex=0;
-    playerNamesInput.disabled=false;
-    difficultySelect.disabled=false;
-    playerNamesInput.value="";
-    feedback.textContent="";
-    attemptsSpan.textContent="Attempts: 0";
-    timerSpan.textContent="Time: 0s";
-    playerTilesDiv.innerHTML="";
-    scoreboardBody.innerHTML="";
+    attempts=0; secondsElapsed=0; winnerDeclared=false;
+    players=[]; scores=[]; playerSecrets={}; playerAttempts={}; currentPlayerIndex=0;
+    playerNamesInput.disabled=false; difficultySelect.disabled=false; playerNamesInput.value="";
+    feedback.textContent=""; attemptsSpan.textContent="Attempts: 0"; timerSpan.textContent="Time: 0s";
+    playerTilesDiv.innerHTML=""; scoreboardBody.innerHTML="";
 });
 
+// guessing
 guessBtn.addEventListener("click",()=>{
     if(players.length===0){ alert("Click Start Game first!"); return; }
     const currentPlayer = players[currentPlayerIndex];
-    if(playerSecrets[currentPlayer]===0){ 
-        feedback.textContent = `${currentPlayer} already finished!`;
-        return; 
-    }
-
     const guess=parseInt(guessInput.value.trim());
     if(isNaN(guess)||guess<1||guess>maxNumber){
         feedback.textContent=`❌ Enter a number between 1 and ${maxNumber}!`;
@@ -257,26 +277,25 @@ guessBtn.addEventListener("click",()=>{
         });
         playerSecrets[currentPlayer]=0;
 
-        if(players.every(p => playerSecrets[p]===0)){
-            clearInterval(timerInterval);
-            feedback.textContent="✅ All players finished! Click Start Game to play again.";
-        } else {
-            do {
-                currentPlayerIndex = (currentPlayerIndex+1)%players.length;
-            } while(playerSecrets[players[currentPlayerIndex]]===0);
-            feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
-        }
+        // move to next player who hasn't finished
+        do { currentPlayerIndex = (currentPlayerIndex+1)%players.length; } while(playerSecrets[players[currentPlayerIndex]]===0);
+
+        feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
+
+        // flash tile on new round
+        renderPlayerTiles(true);
     } else {
         feedback.textContent=guess<playerSecrets[currentPlayer]?"Higher!":"Lower!";
-        feedback.style.color=var(--wrong);
+        feedback.style.color="var(--wrong)";
+        renderPlayerTiles();
     }
 
-    renderPlayerTiles();
     updateScoreboard();
     guessInput.value="";
     guessInput.focus();
 });
 
+// update scoreboard
 function updateScoreboard(){
     scoreboardBody.innerHTML="";
     scores.forEach((s,i)=>{
