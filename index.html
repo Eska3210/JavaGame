@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game - Silver Shiny</title>
+<title>Eska's Multiplayer Guessing Game - Silver</title>
 <style>
 :root {
     --bg-light: #e6e6e6;
@@ -103,8 +103,7 @@ tr.winner-row { background: var(--correct); color:#fff; font-weight:bold; }
 </header>
 
 <div class="container">
-
-<input type="text" id="playerNames" placeholder="Enter players use commas">
+<input type="text" id="playerNames" placeholder="Enter player names, e.g. Alice,Bob,Charlie">
 <select id="difficulty">
     <option value="10">Easy (1-10)</option>
     <option value="50">Medium (1-50)</option>
@@ -140,7 +139,6 @@ tr.winner-row { background: var(--correct); color:#fff; font-weight:bold; }
 </div>
 
 <script>
-// JavaScript remains same as rollover version
 let attempts, timerInterval, secondsElapsed, maxNumber;
 let players=[], currentPlayerIndex=0, scores=[], winnerDeclared=false;
 let playerSecrets={}, playerAttempts={};
