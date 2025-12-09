@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game</title>
+<title>Eska's Multiplayer Guessing Game - Mobile Friendly</title>
 <style>
 :root {
     --bg-light: #e0e0e0;
     --text-light: #222;
     --metal-gradient: linear-gradient(145deg, #ffffff, #d1d1d1, #a0a0a0);
+    --accent-gradient: linear-gradient(135deg, #ffd700, #ffa500);
     --correct: #4caf50;
     --wrong: #ff5722;
 }
@@ -24,21 +25,21 @@ body {
 }
 header {
     text-align:center;
-    padding:25px;
-    background: linear-gradient(145deg, #ffffff, #c0c0c0, #e0e0e0);
+    padding:20px;
+    background: var(--accent-gradient);
     color:#222;
     width:100%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     border-bottom:2px solid #999;
 }
-h1 { margin:0; font-size:2rem; text-shadow: 1px 1px 2px #999; }
-.container { padding:20px; max-width:550px; width:95%; }
-.input-row { margin-top:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
+h1 { margin:0; font-size:1.8rem; text-shadow: 1px 1px 2px #999; }
+.container { padding:15px; width:95%; max-width:600px; }
+.input-row { margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 input[type="number"], input[type="text"], select {
-    font-size:1.3rem;
-    padding:14px;
-    flex:1 1 150px;
-    min-width:130px;
+    font-size:1.2rem;
+    padding:12px;
+    flex:1 1 130px;
+    min-width:120px;
     border-radius:16px;
     border:2px solid #999;
     background: var(--metal-gradient);
@@ -46,44 +47,57 @@ input[type="number"], input[type="text"], select {
 }
 input[type="number"] { min:1; step:1; } 
 button {
-    font-size:1.3rem;
-    padding:18px 25px;
+    font-size:1.2rem;
+    padding:16px 20px;
     cursor:pointer;
     border:none;
-    background: var(--metal-gradient);
+    background: var(--accent-gradient);
     color:#222;
-    border-radius:18px;
-    flex:1 1 140px;
-    min-width:140px;
+    border-radius:16px;
+    flex:1 1 130px;
+    min-width:120px;
     transition: transform 0.15s, box-shadow 0.15s;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
-button:hover { transform:scale(1.07); box-shadow: 3px 3px 8px rgba(0,0,0,0.4); }
-.feedback { margin-top:15px; font-weight:bold; font-size:1.4rem; text-align:center; min-height:1.5em; }
-.stats { margin-top:12px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1.1rem; }
-#playerTiles { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-top:25px; }
+button:hover { transform:scale(1.05); box-shadow: 3px 3px 8px rgba(0,0,0,0.4); }
+.feedback { margin-top:10px; font-weight:bold; font-size:1.2rem; text-align:center; min-height:1.5em; }
+.stats { margin-top:8px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1rem; }
+#playerTiles { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:20px; }
 .player-tile {
-    flex:1 1 130px;
-    min-width:120px;
-    max-width:160px;
-    padding:25px;
-    border-radius:24px;
+    flex:1 1 120px;
+    min-width:100px;
+    max-width:150px;
+    padding:20px;
+    border-radius:20px;
     background: linear-gradient(145deg, #ffffff, #d1d1d1, #a0a0a0);
     font-weight:bold;
     text-align:center;
-    font-size:1.3rem;
+    font-size:1.2rem;
     cursor:pointer;
     user-select:none;
     transition: transform 0.25s, box-shadow 0.25s;
     box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
 }
-.player-tile.current { border:4px solid #999; transform:scale(1.08); box-shadow: 3px 3px 10px rgba(0,0,0,0.4);}
-.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.12); box-shadow: 3px 3px 12px rgba(0,0,0,0.5); }
-table { width:100%; margin-top:20px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; }
-th, td { border:2px solid #999; padding:14px; text-align:center; font-size:1.1rem; }
-th { background: linear-gradient(145deg, #c0c0c0, #e0e0e0, #b0b0b0); color:#222; }
-tr.current-row { background: #ddd; font-weight:bold; }
+.player-tile.current { border:3px solid #ff9800; transform:scale(1.05); box-shadow: 3px 3px 10px rgba(0,0,0,0.4);}
+.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.08); box-shadow: 3px 3px 12px rgba(0,0,0,0.5); }
+table { width:100%; margin-top:15px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; }
+th, td { border:2px solid #999; padding:10px; text-align:center; font-size:1rem; }
+th { background: var(--accent-gradient); color:#222; }
+tr.current-row { background: #ffd700; font-weight:bold; }
 tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
+@media(max-width:500px){
+    input[type="number"], input[type="text"], select, button {
+        font-size:1rem;
+        padding:12px;
+        min-width:100px;
+    }
+    .player-tile {
+        font-size:1rem;
+        padding:16px;
+        min-width:90px;
+    }
+    table th, table td { font-size:0.9rem; padding:8px; }
+}
 </style>
 </head>
 <body>
@@ -130,8 +144,9 @@ tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 </div>
 
 <script>
-let secretNumber, attempts, timerInterval, secondsElapsed, maxNumber;
+let attempts, timerInterval, secondsElapsed, maxNumber;
 let players=[], currentPlayerIndex=0, scores=[], winnerDeclared=false;
+let playerSecrets={}, playerAttempts={};
 
 const playerNamesInput = document.getElementById("playerNames");
 const guessInput = document.getElementById("guessInput");
@@ -151,6 +166,12 @@ function initializePlayers() {
     players = names;
     playerNamesInput.disabled = true;
     difficultySelect.disabled = true;
+
+    maxNumber = parseInt(difficultySelect.value);
+    players.forEach(p=>{
+        playerSecrets[p]=Math.floor(Math.random()*maxNumber)+1;
+        playerAttempts[p]=0;
+    });
     return true;
 }
 
@@ -159,10 +180,6 @@ function startRound(){
 
     currentPlayerIndex=0;
     winnerDeclared=false;
-
-    maxNumber=parseInt(difficultySelect.value);
-    secretNumber=Math.floor(Math.random()*maxNumber)+1;
-
     attempts=0;
     secondsElapsed=0;
 
@@ -184,8 +201,9 @@ function renderPlayerTiles(){
         const div=document.createElement("div");
         div.className="player-tile"+(i===currentPlayerIndex?" current":"");
         div.textContent=p;
+        if(playerSecrets[p]===0) div.classList.add("winner");
         div.addEventListener("click",()=>{ 
-            if(winnerDeclared) return;
+            if(playerSecrets[players[currentPlayerIndex]]===0) return;
             document.querySelector(".player-tile.current")?.classList.remove("current");
             div.classList.add("current");
             currentPlayerIndex=i;
@@ -200,12 +218,13 @@ startBtn.addEventListener("click", startRound);
 
 restartBtn.addEventListener("click", ()=>{
     clearInterval(timerInterval);
-    secretNumber=0;
     attempts=0;
     secondsElapsed=0;
     winnerDeclared=false;
     players=[];
     scores=[];
+    playerSecrets={};
+    playerAttempts={};
     currentPlayerIndex=0;
     playerNamesInput.disabled=false;
     difficultySelect.disabled=false;
@@ -219,7 +238,8 @@ restartBtn.addEventListener("click", ()=>{
 
 guessBtn.addEventListener("click",()=>{
     if(players.length===0){ alert("Click Start Game first!"); return; }
-    if(winnerDeclared){ alert("Round over! Click Start to start a new round."); return; }
+    const currentPlayer = players[currentPlayerIndex];
+    if(playerSecrets[currentPlayer]===0){ alert(`${currentPlayer} already finished!`); return; }
 
     const guess=parseInt(guessInput.value.trim());
     if(isNaN(guess)||guess<1||guess>maxNumber){
@@ -228,28 +248,38 @@ guessBtn.addEventListener("click",()=>{
         return;
     }
 
-    attempts++;
-    attemptsSpan.textContent="Attempts: "+attempts;
-    const currentPlayer = players[currentPlayerIndex];
+    playerAttempts[currentPlayer]++;
+    attemptsSpan.textContent="Attempts: "+playerAttempts[currentPlayer];
 
-    if(guess===secretNumber){
+    if(guess===playerSecrets[currentPlayer]){
         feedback.textContent=`🎉 ${currentPlayer} guessed correctly!`;
         feedback.style.color="green";
-        scores.push({player:currentPlayer,difficulty:difficultySelect.options[difficultySelect.selectedIndex].text,attempts,time:secondsElapsed});
-        winnerDeclared=true;
-        document.querySelectorAll(".player-tile")[currentPlayerIndex].classList.add("winner");
-        clearInterval(timerInterval);
+        scores.push({player:currentPlayer,difficulty:difficultySelect.options[difficultySelect.selectedIndex].text,attempts:playerAttempts[currentPlayer],time:secondsElapsed});
+        playerSecrets[currentPlayer]=0; 
     } else {
-        feedback.textContent=guess<secretNumber?"Higher!":"Lower!";
+        feedback.textContent=guess<playerSecrets[currentPlayer]?"Higher!":"Lower!";
         feedback.style.color="#ff5722";
-        currentPlayerIndex=(currentPlayerIndex+1)%players.length;
-        renderPlayerTiles();
-        feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
     }
+
+    // Move to next unfinished player
+    let nextIndex=currentPlayerIndex;
+    do{
+        nextIndex=(nextIndex+1)%players.length;
+    }while(playerSecrets[players[nextIndex]]===0 && nextIndex!==currentPlayerIndex);
+    currentPlayerIndex=nextIndex;
+
+    renderPlayerTiles();
+    feedback.textContent=playerSecrets[players[currentPlayerIndex]]===0 ? "Round Finished!" : `${players[currentPlayerIndex]}'s turn!`;
 
     guessInput.value="";
     guessInput.focus();
+
     updateScoreboard();
+
+    if(players.every(p=>playerSecrets[p]===0)){
+        clearInterval(timerInterval);
+        feedback.textContent="✅ Round completed! Click Start Game to play again.";
+    }
 });
 
 function updateScoreboard(){
@@ -257,8 +287,8 @@ function updateScoreboard(){
     scores.forEach((s,i)=>{
         const tr=document.createElement("tr");
         tr.innerHTML=`<td>${i+1}</td><td>${s.player}</td><td>${s.difficulty}</td><td>${s.attempts}</td><td>${s.time}</td>`;
-        if(!winnerDeclared && s.player===players[currentPlayerIndex]) tr.classList.add("current-row");
-        if(winnerDeclared && s.player===players[currentPlayerIndex]) tr.classList.add("winner-row");
+        if(players[currentPlayerIndex]===s.player && playerSecrets[s.player]!==0) tr.classList.add("current-row");
+        if(playerSecrets[s.player]===0) tr.classList.add("winner-row");
         scoreboardBody.appendChild(tr);
     });
 }
