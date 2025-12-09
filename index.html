@@ -114,6 +114,7 @@ tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 
 <div class="input-row">
     <button id="startBtn" style="flex:1 1 100%;">Start Game</button>
+    <button id="restartBtn" style="flex:1 1 100%; display:none;">Restart Game</button>
 </div>
 
 <div id="playerTiles"></div>
@@ -147,6 +148,7 @@ const playerNamesInput = document.getElementById("playerNames");
 const guessInput = document.getElementById("guessInput");
 const guessBtn = document.getElementById("guessBtn");
 const startBtn = document.getElementById("startBtn");
+const restartBtn = document.getElementById("restartBtn");
 const feedback = document.getElementById("feedback");
 const attemptsSpan = document.getElementById("attempts");
 const timerSpan = document.getElementById("timer");
@@ -155,7 +157,8 @@ const scoreboardBody = document.querySelector("#scoreboard tbody");
 const playerTilesDiv = document.getElementById("playerTiles");
 
 function startGame(){
-    if(players.length === 0){ // first time or after reset
+    // first time start
+    if(players.length === 0){ 
         const names = playerNamesInput.value.split(',').map(n=>n.trim()).filter(n=>n);
         if(names.length<1){ alert("Enter at least 1 player!"); return; }
         players = names;
@@ -184,7 +187,7 @@ function startGame(){
     updateScoreboard();
 
     startBtn.disabled = true;
-    startBtn.textContent = "Start Game";
+    restartBtn.style.display = "inline-block";
 }
 
 function renderPlayerTiles(){
@@ -206,9 +209,31 @@ function renderPlayerTiles(){
 
 startBtn.addEventListener("click", startGame);
 
+restartBtn.addEventListener("click", ()=>{
+    // Full reset
+    clearInterval(timerInterval);
+    secretNumber=0;
+    attempts=0;
+    secondsElapsed=0;
+    winnerDeclared=false;
+    players=[];
+    scores=[];
+    currentPlayerIndex=0;
+    playerNamesInput.disabled=false;
+    difficultySelect.disabled=false;
+    playerNamesInput.value="";
+    feedback.textContent="";
+    attemptsSpan.textContent="Attempts: 0";
+    timerSpan.textContent="Time: 0s";
+    playerTilesDiv.innerHTML="";
+    scoreboardBody.innerHTML="";
+    startBtn.disabled=false;
+    restartBtn.style.display="none";
+});
+
 guessBtn.addEventListener("click",()=>{
     if(players.length===0){ alert("Click Start Game first!"); return; }
-    if(winnerDeclared){ alert("Round over! Click Start to restart."); return; }
+    if(winnerDeclared){ alert("Round over! Click Start to start a new round."); return; }
 
     const guess=parseInt(guessInput.value.trim());
     if(isNaN(guess)||guess<1||guess>maxNumber){
@@ -228,19 +253,16 @@ guessBtn.addEventListener("click",()=>{
         winnerDeclared=true;
         document.querySelectorAll(".player-tile")[currentPlayerIndex].classList.add("winner");
         clearInterval(timerInterval);
-
-        // Enable restart
-        startBtn.disabled = false;
-        startBtn.textContent = "Restart Game";
-
     } else {
         feedback.textContent=guess<secretNumber?"Higher!":"Lower!";
         feedback.style.color="#ff5722";
+        currentPlayerIndex=(currentPlayerIndex+1)%players.length;
+        renderPlayerTiles();
+        feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
     }
 
     guessInput.value="";
     guessInput.focus();
-
     updateScoreboard();
 });
 
@@ -248,7 +270,7 @@ function updateScoreboard(){
     scoreboardBody.innerHTML="";
     players.forEach((p,i)=>{
         const tr=document.createElement("tr");
-        const playerScore=scores.find(s=>s.player===p);
+        const playerScore=scores.filter(s=>s.player===p).slice(-1)[0]; // last round score
         tr.innerHTML=`<td>${i+1}</td><td>${p}</td><td>${playerScore?playerScore.difficulty:'-'}</td><td>${playerScore?playerScore.attempts:'-'}</td><td>${playerScore?playerScore.time:'-'}</td>`;
         if(!winnerDeclared && i===currentPlayerIndex) tr.classList.add("current-row");
         if(playerScore && winnerDeclared) tr.classList.add("winner-row");
