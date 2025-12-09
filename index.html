@@ -3,17 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game - Sophisticated</title>
+<title>Eska's Multiplayer Guessing Game - Silver Shiny</title>
 <style>
 :root {
-    --bg-light: #f2f2f2;
+    --bg-light: #e6e6e6;
     --text-color: #222;
-    --metal-gradient: linear-gradient(145deg, #ffffff, #d0d0d0, #a8a8a8);
-    --button-gradient: linear-gradient(145deg, #c0c0c0, #a0a0a0);
+    --metal-gradient: linear-gradient(145deg, #ffffff, #cfd1d3, #a8a9ab);
+    --button-gradient: linear-gradient(145deg, #d1d3d6, #a9abb0);
+    --tile-bg: linear-gradient(145deg, #f0f0f0, #c8c8c8, #a0a0a0);
+    --tile-current-border: #1e90ff;
     --correct: #4caf50;
     --wrong: #ff7043;
-    --tile-bg: linear-gradient(145deg, #e8e8e8, #c8c8c8);
-    --tile-current-border: #007acc;
+    --shadow: rgba(0,0,0,0.25);
 }
 body {
     margin:0;
@@ -31,77 +32,74 @@ header {
     background: var(--metal-gradient);
     color:#222;
     width:100%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    border-bottom:1px solid #999;
+    box-shadow: 0 6px 14px var(--shadow);
+    border-bottom:2px solid #999;
 }
-h1 { margin:0; font-size:1.8rem; }
-.container { padding:15px; width:95%; max-width:600px; }
-.input-row { margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+h1 { margin:0; font-size:2rem; font-weight:bold; text-shadow: 1px 1px 2px #aaa; }
+.container { padding:20px; width:95%; max-width:600px; }
+.input-row { margin-top:15px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center; }
 input[type="number"], input[type="text"], select {
-    font-size:1.2rem;
-    padding:12px;
-    flex:1 1 130px;
-    min-width:120px;
-    border-radius:12px;
-    border:1px solid #999;
+    font-size:1.3rem;
+    padding:14px;
+    flex:1 1 140px;
+    min-width:130px;
+    border-radius:16px;
+    border:2px solid #999;
     background: var(--metal-gradient);
-    box-shadow: 2px 2px 4px rgba(0,0,0,0.2) inset;
+    box-shadow: 3px 3px 6px var(--shadow) inset;
 }
 input[type="number"] { min:1; step:1; } 
 button {
-    font-size:1.2rem;
-    padding:16px 20px;
+    font-size:1.3rem;
+    padding:18px 22px;
     cursor:pointer;
     border:none;
     background: var(--button-gradient);
     color:#222;
-    border-radius:12px;
-    flex:1 1 130px;
-    min-width:120px;
-    transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
-}
-button:hover { transform:scale(1.05); box-shadow: 3px 3px 8px rgba(0,0,0,0.3); }
-.feedback { margin-top:10px; font-weight:bold; font-size:1.2rem; text-align:center; min-height:1.5em; }
-.stats { margin-top:8px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1rem; }
-#playerTiles { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:20px; }
-.player-tile {
-    flex:1 1 120px;
-    min-width:100px;
-    max-width:150px;
-    padding:20px;
     border-radius:16px;
+    flex:1 1 140px;
+    min-width:130px;
+    font-weight:bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 3px 3px 10px var(--shadow);
+}
+button:hover { transform:scale(1.07); box-shadow: 4px 4px 12px var(--shadow); }
+.feedback { margin-top:12px; font-weight:bold; font-size:1.3rem; text-align:center; min-height:1.5em; }
+.stats { margin-top:10px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1.1rem; }
+#playerTiles { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:25px; }
+.player-tile {
+    flex:1 1 130px;
+    min-width:110px;
+    max-width:160px;
+    padding:22px;
+    border-radius:20px;
     background: var(--tile-bg);
     font-weight:bold;
     text-align:center;
-    font-size:1.2rem;
+    font-size:1.25rem;
     cursor:pointer;
     user-select:none;
-    transition: transform 0.25s, box-shadow 0.25s, border 0.25s;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+    box-shadow: 3px 3px 12px var(--shadow);
 }
-.player-tile.current { border:3px solid var(--tile-current-border); transform:scale(1.03);}
-.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.05);}
-table { width:100%; margin-top:15px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; }
-th, td { border:1px solid #999; padding:10px; text-align:center; font-size:1rem; }
-th { background: #b0b0b0; color:#222; }
-tr.current-row { background: #c0e0ff; font-weight:bold; }
-tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
+.player-tile.current { border:3px solid var(--tile-current-border); transform:scale(1.06);}
+.player-tile.winner { background: var(--correct); color:#fff; transform:scale(1.07); box-shadow: 4px 4px 14px var(--shadow);}
+table { width:100%; margin-top:20px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:14px; }
+th, td { border:1px solid #999; padding:12px; text-align:center; font-size:1.05rem; }
+th { background: linear-gradient(145deg, #d4d4d4, #a8a8a8); color:#222; font-weight:bold; }
+tr.current-row { background: #d0ebff; font-weight:bold; }
+tr.winner-row { background: var(--correct); color:#fff; font-weight:bold; }
 @media(max-width:500px){
-    input[type="number"], input[type="text"], select, button {
-        font-size:1rem;
-        padding:12px;
-        min-width:100px;
-    }
-    .player-tile { font-size:1rem; padding:16px; min-width:90px; }
-    table th, table td { font-size:0.9rem; padding:8px; }
+    input[type="number"], input[type="text"], select, button { font-size:1.1rem; padding:12px; min-width:100px; }
+    .player-tile { font-size:1.1rem; padding:18px; min-width:90px; }
+    table th, table td { font-size:0.95rem; padding:8px; }
 }
 </style>
 </head>
 <body>
 
 <header>
-<h1>🎯 Eska's Multiplayer Guessing Game</h1>
+<h1>Eska's Multiplayer Guessing Game</h1>
 </header>
 
 <div class="container">
@@ -142,7 +140,7 @@ tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 </div>
 
 <script>
-// JavaScript logic remains same as last rollover version, using playerSecrets and currentPlayerIndex
+// JavaScript remains same as rollover version
 let attempts, timerInterval, secondsElapsed, maxNumber;
 let players=[], currentPlayerIndex=0, scores=[], winnerDeclared=false;
 let playerSecrets={}, playerAttempts={};
