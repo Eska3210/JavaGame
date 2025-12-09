@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game - Mobile Friendly</title>
+<title>Eska's Multiplayer Guessing Game</title>
 <style>
 :root {
     --bg-light: #e0e0e0;
@@ -203,12 +203,10 @@ function renderPlayerTiles(){
         div.textContent=p;
         if(playerSecrets[p]===0) div.classList.add("winner");
         div.addEventListener("click",()=>{ 
-            if(playerSecrets[players[currentPlayerIndex]]===0) return;
+            // allow selection only if player is current and unfinished
+            if(i!==currentPlayerIndex || playerSecrets[p]===0) return;
             document.querySelector(".player-tile.current")?.classList.remove("current");
             div.classList.add("current");
-            currentPlayerIndex=i;
-            feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
-            updateScoreboard();
         });
         playerTilesDiv.appendChild(div);
     });
@@ -239,7 +237,10 @@ restartBtn.addEventListener("click", ()=>{
 guessBtn.addEventListener("click",()=>{
     if(players.length===0){ alert("Click Start Game first!"); return; }
     const currentPlayer = players[currentPlayerIndex];
-    if(playerSecrets[currentPlayer]===0){ alert(`${currentPlayer} already finished!`); return; }
+    if(playerSecrets[currentPlayer]===0){ 
+        feedback.textContent = `${currentPlayer} already finished!`;
+        return; 
+    }
 
     const guess=parseInt(guessInput.value.trim());
     if(isNaN(guess)||guess<1||guess>maxNumber){
@@ -254,32 +255,33 @@ guessBtn.addEventListener("click",()=>{
     if(guess===playerSecrets[currentPlayer]){
         feedback.textContent=`🎉 ${currentPlayer} guessed correctly!`;
         feedback.style.color="green";
-        scores.push({player:currentPlayer,difficulty:difficultySelect.options[difficultySelect.selectedIndex].text,attempts:playerAttempts[currentPlayer],time:secondsElapsed});
-        playerSecrets[currentPlayer]=0; 
+        scores.push({
+            player: currentPlayer,
+            difficulty: difficultySelect.options[difficultySelect.selectedIndex].text,
+            attempts: playerAttempts[currentPlayer],
+            time: secondsElapsed
+        });
+        playerSecrets[currentPlayer]=0; // mark finished
+
+        // move to next unfinished player
+        if(players.every(p => playerSecrets[p]===0)){
+            clearInterval(timerInterval);
+            feedback.textContent="✅ All players finished! Click Start Game to play again.";
+        } else {
+            do {
+                currentPlayerIndex = (currentPlayerIndex+1)%players.length;
+            } while(playerSecrets[players[currentPlayerIndex]]===0);
+            feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
+        }
     } else {
         feedback.textContent=guess<playerSecrets[currentPlayer]?"Higher!":"Lower!";
         feedback.style.color="#ff5722";
     }
 
-    // Move to next unfinished player
-    let nextIndex=currentPlayerIndex;
-    do{
-        nextIndex=(nextIndex+1)%players.length;
-    }while(playerSecrets[players[nextIndex]]===0 && nextIndex!==currentPlayerIndex);
-    currentPlayerIndex=nextIndex;
-
     renderPlayerTiles();
-    feedback.textContent=playerSecrets[players[currentPlayerIndex]]===0 ? "Round Finished!" : `${players[currentPlayerIndex]}'s turn!`;
-
+    updateScoreboard();
     guessInput.value="";
     guessInput.focus();
-
-    updateScoreboard();
-
-    if(players.every(p=>playerSecrets[p]===0)){
-        clearInterval(timerInterval);
-        feedback.textContent="✅ Round completed! Click Start Game to play again.";
-    }
 });
 
 function updateScoreboard(){
