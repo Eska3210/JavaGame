@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game</title>
+<title>Arcade Multiplayer Guessing Game</title>
 <style>
 :root {
     --bg-light: #e0e0e0;
@@ -48,7 +48,7 @@ input[type="number"], input[type="text"], select {
     background: var(--metal-gradient);
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2) inset;
 }
-input[type="number"] { min:1; step:1; } /* Important fix */
+input[type="number"] { min:1; step:1; } 
 button {
     font-size:1.3rem;
     padding:18px 25px;
@@ -99,7 +99,7 @@ tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 <body>
 
 <header>
-<h1>Eska's Multiplayer Guessing Game</h1>
+<h1>🎮 Arcade Multiplayer Guessing Game</h1>
 </header>
 
 <div class="container">
@@ -155,9 +155,14 @@ const scoreboardBody = document.querySelector("#scoreboard tbody");
 const playerTilesDiv = document.getElementById("playerTiles");
 
 function startGame(){
-    const names = playerNamesInput.value.split(',').map(n=>n.trim()).filter(n=>n);
-    if(names.length<1){ alert("Enter at least 1 player!"); return; }
-    players = names;
+    if(players.length === 0){ // first time or after reset
+        const names = playerNamesInput.value.split(',').map(n=>n.trim()).filter(n=>n);
+        if(names.length<1){ alert("Enter at least 1 player!"); return; }
+        players = names;
+        playerNamesInput.disabled = true;
+        difficultySelect.disabled = true;
+    }
+
     currentPlayerIndex=0;
     winnerDeclared=false;
 
@@ -179,8 +184,7 @@ function startGame(){
     updateScoreboard();
 
     startBtn.disabled = true;
-    playerNamesInput.disabled = true;
-    difficultySelect.disabled = true;
+    startBtn.textContent = "Start Game";
 }
 
 function renderPlayerTiles(){
@@ -204,7 +208,7 @@ startBtn.addEventListener("click", startGame);
 
 guessBtn.addEventListener("click",()=>{
     if(players.length===0){ alert("Click Start Game first!"); return; }
-    if(winnerDeclared){ alert("Round over! New number generated."); return; }
+    if(winnerDeclared){ alert("Round over! Click Start to restart."); return; }
 
     const guess=parseInt(guessInput.value.trim());
     if(isNaN(guess)||guess<1||guess>maxNumber){
@@ -225,22 +229,10 @@ guessBtn.addEventListener("click",()=>{
         document.querySelectorAll(".player-tile")[currentPlayerIndex].classList.add("winner");
         clearInterval(timerInterval);
 
-        // Rollover: start new round automatically
-        setTimeout(()=>{
-            winnerDeclared=false;
-            currentPlayerIndex=0;
-            secretNumber=Math.floor(Math.random()*maxNumber)+1;
-            attempts=0;
-            secondsElapsed=0;
-            feedback.textContent=`New round! ${players[currentPlayerIndex]}'s turn!`;
-            attemptsSpan.textContent="Attempts: 0";
-            timerSpan.textContent="Time: 0s";
-            guessInput.value="";
-            document.querySelectorAll(".player-tile").forEach(tile => tile.classList.remove("winner"));
-            document.querySelector(".player-tile.current").classList.add("current");
-            timerInterval=setInterval(()=>{ secondsElapsed++; timerSpan.textContent="Time: "+secondsElapsed+"s"; },1000);
-            updateScoreboard();
-        },2000);
+        // Enable restart
+        startBtn.disabled = false;
+        startBtn.textContent = "Restart Game";
+
     } else {
         feedback.textContent=guess<secretNumber?"Higher!":"Lower!";
         feedback.style.color="#ff5722";
@@ -257,7 +249,7 @@ function updateScoreboard(){
     players.forEach((p,i)=>{
         const tr=document.createElement("tr");
         const playerScore=scores.find(s=>s.player===p);
-        tr.innerHTML=`<td>${i+1}</td><td>${p}${playerScore?" 🏆":""}</td><td>${playerScore?playerScore.difficulty:'-'}</td><td>${playerScore?playerScore.attempts:'-'}</td><td>${playerScore?playerScore.time:'-'}</td>`;
+        tr.innerHTML=`<td>${i+1}</td><td>${p}</td><td>${playerScore?playerScore.difficulty:'-'}</td><td>${playerScore?playerScore.attempts:'-'}</td><td>${playerScore?playerScore.time:'-'}</td>`;
         if(!winnerDeclared && i===currentPlayerIndex) tr.classList.add("current-row");
         if(playerScore && winnerDeclared) tr.classList.add("winner-row");
         scoreboardBody.appendChild(tr);
