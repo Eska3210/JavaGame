@@ -15,26 +15,85 @@
     --wrong: #ff9800;
 }
 body {
-    margin:0; font-family: 'Segoe UI', sans-serif;
+    margin:0;
+    font-family: 'Segoe UI', sans-serif;
     background-color: var(--bg-light);
     color: var(--text-light);
-    display: flex; flex-direction: column; align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     min-height: 100vh;
     transition: background-color 0.3s, color 0.3s;
 }
-header { text-align:center; padding:20px; background-color: var(--accent); color:#fff; width:100%; }
-h1 { margin:0; font-size:2rem; }
-.container { padding:20px; max-width:400px; width:100%; }
-.input-row { margin-top:10px; display:flex; justify-content:center; gap:10px; }
-input[type="number"] { font-size:1rem; padding:5px; flex:1; }
-button { font-size:1rem; padding:5px 10px; cursor:pointer; border:none; background-color: var(--accent); color:#fff; border-radius:4px; }
+header {
+    text-align:center;
+    padding:20px;
+    background-color: var(--accent);
+    color:#fff;
+    width:100%;
+}
+h1 { margin:0; font-size:1.8rem; }
+.container {
+    padding:15px;
+    max-width:480px;
+    width:95%;
+}
+.input-row {
+    margin-top:10px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+}
+input[type="number"], input[type="text"], select {
+    font-size:1rem;
+    padding:10px;
+    flex:1 1 120px;
+    min-width:100px;
+    border-radius:4px;
+    border:1px solid #999;
+}
+button {
+    font-size:1rem;
+    padding:10px 15px;
+    cursor:pointer;
+    border:none;
+    background-color: var(--accent);
+    color:#fff;
+    border-radius:6px;
+    flex:1 1 100px;
+    min-width:100px;
+}
 button:hover { opacity:0.85; }
-select { font-size:1rem; padding:5px; margin-top:10px; width:100%; }
-.feedback { margin-top:10px; font-weight:bold; font-size:1.1rem; text-align:center; min-height:1.5em; }
-.stats { margin-top:10px; display:flex; justify-content:space-between; font-size:0.9rem; }
-table { width:100%; margin-top:15px; border-collapse: collapse; }
-th, td { border:1px solid #999; padding:5px; text-align:center; }
+.feedback {
+    margin-top:10px;
+    font-weight:bold;
+    font-size:1.1rem;
+    text-align:center;
+    min-height:1.5em;
+    word-wrap: break-word;
+}
+.stats {
+    margin-top:10px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    font-size:0.9rem;
+}
+table {
+    width:100%;
+    margin-top:15px;
+    border-collapse: collapse;
+    overflow-x:auto;
+    display:block;
+}
+th, td {
+    border:1px solid #999;
+    padding:5px;
+    text-align:center;
+}
 th { background-color: var(--accent); color:#fff; }
+.current { background-color: #ffd54f; }
 .dark { background-color: var(--bg-dark); color: var(--text-dark); }
 .dark th { background-color: var(--accent); }
 </style>
@@ -47,6 +106,9 @@ th { background-color: var(--accent); color:#fff; }
 
 <div class="container">
 
+<label for="playerNames">Enter Player Names (comma separated):</label>
+<input type="text" id="playerNames" placeholder="e.g. Alice,Bob,Charlie">
+
 <label for="difficulty">Select Difficulty:</label>
 <select id="difficulty">
     <option value="10">Easy (1-10)</option>
@@ -55,20 +117,23 @@ th { background-color: var(--accent); color:#fff; }
 </select>
 
 <div class="input-row">
-    <input type="number" id="guessInput" placeholder="Your guess">
+    <input type="number" id="guessInput" placeholder="Your guess" min="1">
     <button id="guessBtn">Guess</button>
 </div>
 
 <div class="feedback" id="feedback"></div>
 
 <div class="stats">
-    <span id="playerTurn">Player 1's Turn</span>
+    <span id="playerTurn">Current Player: </span>
     <span id="attempts">Attempts: 0</span>
     <span id="timer">Time: 0s</span>
 </div>
 
-<button id="playAgainBtn" style="margin-top:10px;">Play Again</button>
-<button id="toggleDarkBtn" style="margin-top:10px;">Toggle Dark Mode</button>
+<div class="input-row" style="margin-top:10px;">
+    <button id="playAgainBtn">Play Again</button>
+    <button id="toggleDarkBtn">Toggle Dark Mode</button>
+    <button id="shareBtn">Share on WhatsApp</button>
+</div>
 
 <table id="scoreboard">
 <thead>
@@ -81,9 +146,11 @@ th { background-color: var(--accent); color:#fff; }
 
 <script>
 let secretNumber, attempts, timerInterval, secondsElapsed, maxNumber;
-let currentPlayer = 1;
+let players = [];
+let currentPlayerIndex = 0;
 let scores = [];
 
+const playerNamesInput = document.getElementById("playerNames");
 const guessInput = document.getElementById("guessInput");
 const guessBtn = document.getElementById("guessBtn");
 const feedback = document.getElementById("feedback");
@@ -92,20 +159,27 @@ const timerSpan = document.getElementById("timer");
 const difficultySelect = document.getElementById("difficulty");
 const playAgainBtn = document.getElementById("playAgainBtn");
 const toggleDarkBtn = document.getElementById("toggleDarkBtn");
+const shareBtn = document.getElementById("shareBtn");
 const scoreboardBody = document.querySelector("#scoreboard tbody");
 const playerTurnSpan = document.getElementById("playerTurn");
 
 function startGame() {
+    const names = playerNamesInput.value.split(',').map(n => n.trim()).filter(n => n);
+    if(names.length < 1) { alert("Please enter at least one player name!"); return; }
+    players = names;
+    currentPlayerIndex = 0;
+
     maxNumber = parseInt(difficultySelect.value);
     secretNumber = Math.floor(Math.random() * maxNumber) + 1;
+    guessInput.max = maxNumber;
+
     attempts = 0;
     secondsElapsed = 0;
-    currentPlayer = 1;
 
     feedback.textContent = "Start guessing!";
     attemptsSpan.textContent = "Attempts: 0";
     timerSpan.textContent = "Time: 0s";
-    playerTurnSpan.textContent = "Player 1's Turn";
+    playerTurnSpan.textContent = `Current Player: ${players[currentPlayerIndex]}`;
     guessInput.value = "";
 
     clearInterval(timerInterval);
@@ -113,13 +187,17 @@ function startGame() {
         secondsElapsed++;
         timerSpan.textContent = "Time: " + secondsElapsed + "s";
     }, 1000);
+
+    updateScoreboard();
 }
-startGame();
+playAgainBtn.addEventListener("click", startGame);
 
 guessBtn.addEventListener("click", () => {
-    const guess = Number(guessInput.value);
-    if (isNaN(guess) || guess < 1 || guess > maxNumber) {
-        feedback.textContent = "❌ Enter a valid number!";
+    if(players.length === 0) { alert("Please start the game with player names!"); return; }
+
+    const guess = parseInt(guessInput.value.trim());
+    if(isNaN(guess) || guess < 1 || guess > maxNumber) {
+        feedback.textContent = `❌ Enter a number between 1 and ${maxNumber}!`;
         feedback.style.color = "red";
         return;
     }
@@ -127,20 +205,21 @@ guessBtn.addEventListener("click", () => {
     attempts++;
     attemptsSpan.textContent = "Attempts: " + attempts;
 
-    if (guess === secretNumber) {
-        feedback.textContent = `🎉 Player ${currentPlayer} guessed correctly!`;
+    const currentPlayer = players[currentPlayerIndex];
+
+    if(guess === secretNumber) {
+        feedback.textContent = `🎉 ${currentPlayer} guessed correctly!`;
         feedback.style.color = "green";
 
         scores.push({
-            player: `Player ${currentPlayer}`,
+            player: currentPlayer,
             difficulty: difficultySelect.options[difficultySelect.selectedIndex].text,
             attempts,
             time: secondsElapsed
         });
 
-        updateScoreboard();
         clearInterval(timerInterval);
-    } else if (guess < secretNumber) {
+    } else if(guess < secretNumber) {
         feedback.textContent = "Higher!";
         feedback.style.color = "#ff9800";
     } else {
@@ -148,24 +227,40 @@ guessBtn.addEventListener("click", () => {
         feedback.style.color = "#ff9800";
     }
 
-    // Switch player turn
-    currentPlayer = currentPlayer === 1 ? 2 : 1;
-    playerTurnSpan.textContent = `Player ${currentPlayer}'s Turn`;
+    // Switch player
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    playerTurnSpan.textContent = `Current Player: ${players[currentPlayerIndex]}`;
 
     guessInput.value = "";
     guessInput.focus();
+
+    updateScoreboard();
 });
 
-playAgainBtn.addEventListener("click", startGame);
-toggleDarkBtn.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
+toggleDarkBtn.addEventListener("click", () => { document.body.classList.toggle("dark"); });
+
+// Share results on WhatsApp
+shareBtn.addEventListener("click", () => {
+    if(scores.length === 0) { alert("No scores to share yet!"); return; }
+    let message = "🎯 Ultimate Multiplayer Guessing Game Scores:\n";
+    scores.forEach((s,i)=>{
+        message += `${i+1}. ${s.player} | ${s.difficulty} | Attempts: ${s.attempts} | Time: ${s.time}s\n`;
+    });
+    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, "_blank");
 });
 
 function updateScoreboard() {
     scoreboardBody.innerHTML = "";
-    scores.forEach((s,i)=>{
+    players.forEach((p,i)=>{
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${i+1}</td><td>${s.player}</td><td>${s.difficulty}</td><td>${s.attempts}</td><td>${s.time}</td>`;
+        const playerScore = scores.find(s => s.player === p);
+        tr.innerHTML = `<td>${i+1}</td>
+                        <td>${p}</td>
+                        <td>${playerScore ? playerScore.difficulty : '-'}</td>
+                        <td>${playerScore ? playerScore.attempts : '-'}</td>
+                        <td>${playerScore ? playerScore.time : '-'}</td>`;
+        if(i === currentPlayerIndex) tr.classList.add("current");
         scoreboardBody.appendChild(tr);
     });
 }
