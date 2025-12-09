@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Guessing Game</title>
+    <style>
+        :root {
+            --bg-light: #f5f5f5;
+            --bg-dark: #222;
+            --text-light: #000;
+            --text-dark: #fff;
+            --accent: #3f51b5;
+            --correct: #4caf50;
+            --wrong: #ff9800;
+        }
+        body {
+            margin:0; font-family: 'Segoe UI', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-light);
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        header { text-align:center; padding:20px; background-color: var(--accent); color:#fff; width:100%; }
+        h1 { margin:0; font-size:2rem; }
+        .container { padding:20px; max-width:400px; width:100%; }
+        .input-row { margin-top:10px; display:flex; justify-content:center; gap:10px; }
+        input[type="number"] { font-size:1rem; padding:5px; flex:1; }
+        button { font-size:1rem; padding:5px 10px; cursor:pointer; border:none; background-color: var(--accent); color:#fff; }
+        button:hover { opacity:0.85; }
+        select { font-size:1rem; padding:5px; margin-top:10px; }
+        .feedback { margin-top:10px; font-weight:bold; font-size:1.1rem; text-align:center; min-height:1.5em; }
+        .stats { margin-top:10px; display:flex; justify-content:space-between; font-size:0.9rem; }
+        table { width:100%; margin-top:15px; border-collapse: collapse; }
+        th, td { border:1px solid #999; padding:5px; text-align:center; }
+        th { background-color: var(--accent); color:#fff; }
+        .dark { background-color: var(--bg-dark); color: var(--text-dark); }
+        .dark th { background-color: var(--accent); }
+    </style>
+</head>
+<body>
+<header>
+    <h1>🎯 Ultimate Guessing Game</h1>
+</header>
+<div class="container">
+    <label for="difficulty">Select Difficulty:</label>
+    <select id="difficulty">
+        <option value="10">Easy (1-10)</option>
+        <option value="50">Medium (1-50)</option>
+        <option value="100">Hard (1-100)</option>
+    </select>
+
+    <div class="input-row">
+        <input type="number" id="guessInput" placeholder="Your guess">
+        <button id="guessBtn">Guess</button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <div class="stats">
+        <span id="attempts">Attempts: 0</span>
+        <span id="timer">Time: 0s</span>
+    </div>
+
+    <button id="playAgainBtn" style="margin-top:10px;">Play Again</button>
+    <button id="toggleDarkBtn" style="margin-top:10px;">Toggle Dark Mode</button>
+
+    <table id="scoreboard">
+        <thead>
+        <tr><th>No.</th><th>Difficulty</th><th>Attempts</th><th>Time(s)</th></tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    let secretNumber, attempts, timerInterval, secondsElapsed, maxNumber;
+    let scores = [];
+
+    const guessInput = document.getElementById("guessInput");
+    const guessBtn = document.getElementById("guessBtn");
+    const feedback = document.getElementById("feedback");
+    const attemptsSpan = document.getElementById("attempts");
+    const timerSpan = document.getElementById("timer");
+    const difficultySelect = document.getElementById("difficulty");
+    const playAgainBtn = document.getElementById("playAgainBtn");
+    const toggleDarkBtn = document.getElementById("toggleDarkBtn");
+    const scoreboardBody = document.querySelector("#scoreboard tbody");
+
+    function startGame() {
+        maxNumber = parseInt(difficultySelect.value);
+        secretNumber = Math.floor(Math.random() * maxNumber) + 1;
+        attempts = 0;
+        secondsElapsed = 0;
+        feedback.textContent = "Start guessing!";
+        attemptsSpan.textContent = "Attempts: 0";
+        timerSpan.textContent = "Time: 0s";
+        guessInput.value = "";
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            secondsElapsed++;
+            timerSpan.textContent = "Time: " + secondsElapsed + "s";
+        }, 1000);
+    }
+    startGame();
+
+    guessBtn.addEventListener("click", () => {
+        const guess = Number(guessInput.value);
+        if (!guess || guess < 1 || guess > maxNumber) {
+            feedback.textContent = "❌ Enter a valid number!";
+            feedback.style.color = "red";
+            return;
+        }
+        attempts++;
+        attemptsSpan.textContent = "Attempts: " + attempts;
+        if (guess === secretNumber) {
+            feedback.textContent = "🎉 Correct!";
+            feedback.style.color = "green";
+            scores.push({difficulty: difficultySelect.options[difficultySelect.selectedIndex].text, attempts, time: secondsElapsed});
+            updateScoreboard();
+            clearInterval(timerInterval);
+        } else if (guess < secretNumber) {
+            feedback.textContent = "Higher!";
+            feedback.style.color = "#ff9800";
+        } else {
+            feedback.textContent = "Lower!";
+            feedback.style.color = "#ff9800";
+        }
+        guessInput.value = "";
+        guessInput.focus();
+    });
+
+    playAgainBtn.addEventListener("click", startGame);
+
+    toggleDarkBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark");
+    });
+
+    function updateScoreboard() {
+        scoreboardBody.innerHTML = "";
+        scores.forEach((s,i)=>{
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${i+1}</td><td>${s.difficulty}</td><td>${s.attempts}</td><td>${s.time}</td>`;
+            scoreboardBody.appendChild(tr);
+        });
+    }
+</script>
+</body>
+</html>
