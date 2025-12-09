@@ -6,9 +6,9 @@
 <title>Eska's Multiplayer Guessing Game</title>
 <style>
 :root {
-    --bg-light: #f0f0f5;
-    --text-light: #212121;
-    --accent-gradient: linear-gradient(145deg, #d1d1d1, #ffffff, #a0a0a0);
+    --bg-light: #e0e0e0;
+    --text-light: #222;
+    --metal-gradient: linear-gradient(145deg, #ffffff, #d1d1d1, #a0a0a0);
     --correct: #4caf50;
     --wrong: #ff5722;
 }
@@ -26,68 +26,71 @@ body {
 }
 header {
     text-align:center;
-    padding:20px;
-    background: var(--accent-gradient);
-    color:#212121;
+    padding:25px;
+    background: linear-gradient(145deg, #ffffff, #c0c0c0, #e0e0e0);
+    color:#222;
     width:100%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     border-bottom:2px solid #999;
 }
-h1 { margin:0; font-size:1.8rem; }
-.container { padding:15px; max-width:500px; width:95%; }
+h1 { margin:0; font-size:2rem; text-shadow: 1px 1px 2px #999; }
+.container { padding:20px; max-width:550px; width:95%; }
 
 /* Inputs & Buttons */
-.input-row { margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.input-row { margin-top:15px; display:flex; flex-wrap:wrap; gap:15px; justify-content:center; }
 input[type="number"], input[type="text"], select {
-    font-size:1.2rem;
-    padding:12px;
+    font-size:1.3rem;
+    padding:14px;
     flex:1 1 150px;
-    min-width:120px;
-    border-radius:12px;
-    border:1px solid #999;
-    background: linear-gradient(145deg, #ffffff, #d0d0d0);
+    min-width:130px;
+    border-radius:16px;
+    border:2px solid #999;
+    background: var(--metal-gradient);
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2) inset;
 }
 button {
-    font-size:1.2rem;
-    padding:15px 20px;
+    font-size:1.3rem;
+    padding:18px 25px;
     cursor:pointer;
     border:none;
-    background: var(--accent-gradient);
-    color:#212121;
-    border-radius:12px;
-    flex:1 1 120px;
-    min-width:120px;
-    transition: transform 0.1s;
+    background: var(--metal-gradient);
+    color:#222;
+    border-radius:18px;
+    flex:1 1 140px;
+    min-width:140px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
 }
-button:hover { transform:scale(1.05); }
+button:hover { transform:scale(1.07); box-shadow: 3px 3px 8px rgba(0,0,0,0.4); }
 
 /* Feedback & Stats */
-.feedback { margin-top:10px; font-weight:bold; font-size:1.3rem; text-align:center; min-height:1.5em; }
-.stats { margin-top:10px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1rem; }
+.feedback { margin-top:15px; font-weight:bold; font-size:1.4rem; text-align:center; min-height:1.5em; }
+.stats { margin-top:12px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1.1rem; }
 
 /* Player Tiles */
-#playerTiles { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:20px; }
+#playerTiles { display:flex; flex-wrap:wrap; gap:15px; justify-content:center; margin-top:25px; }
 .player-tile {
-    flex:1 1 120px;
-    min-width:100px;
-    max-width:150px;
-    padding:20px;
-    border-radius:20px;
-    background: linear-gradient(145deg, #e6e6e6, #ffffff, #c0c0c0);
+    flex:1 1 130px;
+    min-width:120px;
+    max-width:160px;
+    padding:25px;
+    border-radius:24px;
+    background: linear-gradient(145deg, #ffffff, #d1d1d1, #a0a0a0);
     font-weight:bold;
     text-align:center;
-    font-size:1.2rem;
+    font-size:1.3rem;
     cursor:pointer;
     user-select:none;
-    transition: transform 0.2s;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
 }
-.player-tile.current { border:3px solid #999; transform:scale(1.05); }
-.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.1); }
+.player-tile.current { border:4px solid #999; transform:scale(1.08); box-shadow: 3px 3px 10px rgba(0,0,0,0.4);}
+.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.12); box-shadow: 3px 3px 12px rgba(0,0,0,0.5); }
 
 /* Scoreboard */
-table { width:100%; margin-top:15px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; }
-th, td { border:1px solid #999; padding:12px; text-align:center; font-size:1rem; }
-th { background: linear-gradient(145deg, #c0c0c0, #e0e0e0, #b0b0b0); color:#212121; }
+table { width:100%; margin-top:20px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; }
+th, td { border:2px solid #999; padding:14px; text-align:center; font-size:1.1rem; }
+th { background: linear-gradient(145deg, #c0c0c0, #e0e0e0, #b0b0b0); color:#222; }
 tr.current-row { background: #ddd; }
 tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 </style>
@@ -173,6 +176,10 @@ function startGame(){
 
     renderPlayerTiles();
     updateScoreboard();
+
+    startBtn.disabled = true;
+    playerNamesInput.disabled = true;
+    difficultySelect.disabled = true;
 }
 
 function renderPlayerTiles(){
@@ -196,7 +203,7 @@ startBtn.addEventListener("click", startGame);
 
 guessBtn.addEventListener("click",()=>{
     if(players.length===0){ alert("Click Start Game first!"); return; }
-    if(winnerDeclared){ alert("Game over! Click Start Game."); return; }
+    if(winnerDeclared){ alert("Round over! New number generated."); return; }
 
     const guess=parseInt(guessInput.value.trim());
     if(isNaN(guess)||guess<1||guess>maxNumber){
@@ -216,6 +223,23 @@ guessBtn.addEventListener("click",()=>{
         winnerDeclared=true;
         document.querySelectorAll(".player-tile")[currentPlayerIndex].classList.add("winner");
         clearInterval(timerInterval);
+
+        // Rollover: start new round automatically
+        setTimeout(()=>{
+            winnerDeclared=false;
+            currentPlayerIndex=0;
+            secretNumber=Math.floor(Math.random()*maxNumber)+1;
+            attempts=0;
+            secondsElapsed=0;
+            feedback.textContent=`New round! ${players[currentPlayerIndex]}'s turn!`;
+            attemptsSpan.textContent="Attempts: 0";
+            timerSpan.textContent="Time: 0s";
+            guessInput.value="";
+            document.querySelectorAll(".player-tile").forEach(tile => tile.classList.remove("winner"));
+            document.querySelector(".player-tile.current").classList.add("current");
+            timerInterval=setInterval(()=>{ secondsElapsed++; timerSpan.textContent="Time: "+secondsElapsed+"s"; },1000);
+            updateScoreboard();
+        },2000);
     } else {
         feedback.textContent=guess<secretNumber?"Higher!":"Lower!";
         feedback.style.color="#ff5722";
