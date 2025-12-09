@@ -6,14 +6,16 @@
 <title>Ultimate Multiplayer Guessing Game</title>
 <style>
 :root {
-    --bg-light: #f5f5f5;
-    --bg-dark: #222;
-    --text-light: #000;
-    --text-dark: #fff;
-    --accent: #3f51b5;
+    --bg-light: #e0e0e0;
+    --bg-dark: #121212;
+    --text-light: #212121;
+    --text-dark: #e0e0e0;
+    --accent: #757575;
     --correct: #4caf50;
-    --wrong: #ff9800;
+    --wrong: #f57c00;
 }
+
+/* Body & Layout */
 body {
     margin:0;
     font-family: 'Segoe UI', sans-serif;
@@ -24,6 +26,7 @@ body {
     align-items: center;
     min-height: 100vh;
     transition: background-color 0.3s, color 0.3s;
+    overflow-x: hidden;
 }
 header {
     text-align:center;
@@ -38,6 +41,8 @@ h1 { margin:0; font-size:1.8rem; }
     max-width:480px;
     width:95%;
 }
+
+/* Inputs & Buttons */
 .input-row {
     margin-top:10px;
     display:flex;
@@ -46,29 +51,33 @@ h1 { margin:0; font-size:1.8rem; }
     justify-content:center;
 }
 input[type="number"], input[type="text"], select {
-    font-size:1rem;
-    padding:10px;
-    flex:1 1 120px;
-    min-width:100px;
-    border-radius:4px;
+    font-size:1.2rem;
+    padding:12px;
+    flex:1 1 150px;
+    min-width:120px;
+    border-radius:8px;
     border:1px solid #999;
+    background:#f0f0f0;
 }
 button {
-    font-size:1rem;
-    padding:10px 15px;
+    font-size:1.2rem;
+    padding:15px 20px;
     cursor:pointer;
     border:none;
     background-color: var(--accent);
     color:#fff;
-    border-radius:6px;
-    flex:1 1 100px;
-    min-width:100px;
+    border-radius:12px;
+    flex:1 1 120px;
+    min-width:120px;
+    transition: transform 0.1s;
 }
-button:hover { opacity:0.85; }
+button:hover { opacity:0.9; transform:scale(1.05); }
+
+/* Feedback & Stats */
 .feedback {
     margin-top:10px;
     font-weight:bold;
-    font-size:1.1rem;
+    font-size:1.2rem;
     text-align:center;
     min-height:1.5em;
     word-wrap: break-word;
@@ -78,8 +87,39 @@ button:hover { opacity:0.85; }
     display:flex;
     flex-wrap:wrap;
     justify-content:space-between;
-    font-size:0.9rem;
+    font-size:1rem;
 }
+
+/* Player Badges */
+.player-badge {
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:16px;
+    margin:3px;
+    color:#fff;
+    font-weight:bold;
+    background: linear-gradient(145deg, #d0d0d0, #ffffff, #b0b0b0);
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.2);
+    text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+}
+.current-badge {
+    border:2px solid #757575;
+    animation: shimmer 2s infinite linear;
+}
+
+/* Shimmer Animation */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.current-badge {
+    background: linear-gradient(145deg, #d0d0d0, #ffffff, #b0b0b0, #ffffff, #d0d0d0);
+    background-size: 200% 100%;
+}
+
+/* Scoreboard Table */
 table {
     width:100%;
     margin-top:15px;
@@ -89,13 +129,49 @@ table {
 }
 th, td {
     border:1px solid #999;
-    padding:5px;
+    padding:8px;
     text-align:center;
+    font-size:1rem;
 }
 th { background-color: var(--accent); color:#fff; }
-.current { background-color: #ffd54f; }
+tr:nth-child(even){background-color: #d6d6d6;}
+tr.current-row { 
+    animation: shimmer 2s infinite linear, pulse 1s infinite alternate;
+    background: linear-gradient(145deg, #d0d0d0, #ffffff, #b0b0b0, #ffffff, #d0d0d0);
+    background-size: 200% 100%;
+}
+
+/* Pulse Animation for row */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.02); }
+}
+.winner-icon { color: var(--correct); font-weight:bold; }
+
+/* Dark Mode */
 .dark { background-color: var(--bg-dark); color: var(--text-dark); }
-.dark th { background-color: var(--accent); }
+.dark th { background-color: #424242; }
+.dark input, .dark select { background:#333; color:#e0e0e0; border:1px solid #555; }
+
+/* Confetti */
+.confetti {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.8;
+    border-radius: 50%;
+    animation: fall linear forwards;
+}
+@keyframes fall {
+    0% { transform: translateY(0) rotate(0deg); opacity:1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity:0; }
+}
+
 </style>
 </head>
 <body>
@@ -150,6 +226,7 @@ let players = [];
 let currentPlayerIndex = 0;
 let scores = [];
 
+// Elements
 const playerNamesInput = document.getElementById("playerNames");
 const guessInput = document.getElementById("guessInput");
 const guessBtn = document.getElementById("guessBtn");
@@ -163,106 +240,115 @@ const shareBtn = document.getElementById("shareBtn");
 const scoreboardBody = document.querySelector("#scoreboard tbody");
 const playerTurnSpan = document.getElementById("playerTurn");
 
+// Start Game
 function startGame() {
-    const names = playerNamesInput.value.split(',').map(n => n.trim()).filter(n => n);
-    if(names.length < 1) { alert("Please enter at least one player name!"); return; }
+    const names = playerNamesInput.value.split(',').map(n=>n.trim()).filter(n=>n);
+    if(names.length <1){ alert("Enter at least 1 player!"); return; }
     players = names;
-    currentPlayerIndex = 0;
+    currentPlayerIndex=0;
 
     maxNumber = parseInt(difficultySelect.value);
-    secretNumber = Math.floor(Math.random() * maxNumber) + 1;
+    secretNumber = Math.floor(Math.random()*maxNumber)+1;
     guessInput.max = maxNumber;
 
-    attempts = 0;
-    secondsElapsed = 0;
+    attempts=0;
+    secondsElapsed=0;
 
-    feedback.textContent = "Start guessing!";
-    attemptsSpan.textContent = "Attempts: 0";
-    timerSpan.textContent = "Time: 0s";
-    playerTurnSpan.textContent = `Current Player: ${players[currentPlayerIndex]}`;
-    guessInput.value = "";
+    feedback.textContent="Start guessing!";
+    attemptsSpan.textContent="Attempts: 0";
+    timerSpan.textContent="Time: 0s";
+    playerTurnSpan.innerHTML=`Current Player: <span class="player-badge current-badge">${players[currentPlayerIndex]}</span>`;
+    guessInput.value="";
 
     clearInterval(timerInterval);
-    timerInterval = setInterval(() => {
+    timerInterval = setInterval(()=>{
         secondsElapsed++;
-        timerSpan.textContent = "Time: " + secondsElapsed + "s";
-    }, 1000);
+        timerSpan.textContent="Time: "+secondsElapsed+"s";
+    },1000);
 
     updateScoreboard();
 }
-playAgainBtn.addEventListener("click", startGame);
+playAgainBtn.addEventListener("click",startGame);
 
-guessBtn.addEventListener("click", () => {
-    if(players.length === 0) { alert("Please start the game with player names!"); return; }
-
+// Guess logic
+guessBtn.addEventListener("click",()=>{
+    if(players.length===0){ alert("Start game first!"); return; }
     const guess = parseInt(guessInput.value.trim());
-    if(isNaN(guess) || guess < 1 || guess > maxNumber) {
-        feedback.textContent = `❌ Enter a number between 1 and ${maxNumber}!`;
-        feedback.style.color = "red";
+    if(isNaN(guess)||guess<1||guess>maxNumber){
+        feedback.textContent=`❌ Enter a number between 1 and ${maxNumber}!`;
+        feedback.style.color="red";
         return;
     }
 
     attempts++;
-    attemptsSpan.textContent = "Attempts: " + attempts;
+    attemptsSpan.textContent="Attempts: "+attempts;
 
     const currentPlayer = players[currentPlayerIndex];
 
-    if(guess === secretNumber) {
-        feedback.textContent = `🎉 ${currentPlayer} guessed correctly!`;
-        feedback.style.color = "green";
-
-        scores.push({
-            player: currentPlayer,
-            difficulty: difficultySelect.options[difficultySelect.selectedIndex].text,
-            attempts,
-            time: secondsElapsed
-        });
-
+    if(guess===secretNumber){
+        feedback.textContent=`🎉 ${currentPlayer} guessed correctly!`;
+        feedback.style.color="green";
+        scores.push({player:currentPlayer,difficulty:difficultySelect.options[difficultySelect.selectedIndex].text,attempts,time:secondsElapsed});
         clearInterval(timerInterval);
-    } else if(guess < secretNumber) {
-        feedback.textContent = "Higher!";
-        feedback.style.color = "#ff9800";
-    } else {
-        feedback.textContent = "Lower!";
-        feedback.style.color = "#ff9800";
+        launchConfetti(); // 🎉 confetti effect
+    }else if(guess<secretNumber){
+        feedback.textContent="Higher!";
+        feedback.style.color="#f57c00";
+    }else{
+        feedback.textContent="Lower!";
+        feedback.style.color="#f57c00";
     }
 
-    // Switch player
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    playerTurnSpan.textContent = `Current Player: ${players[currentPlayerIndex]}`;
-
-    guessInput.value = "";
+    currentPlayerIndex=(currentPlayerIndex+1)%players.length;
+    playerTurnSpan.innerHTML=`Current Player: <span class="player-badge current-badge">${players[currentPlayerIndex]}</span>`;
+    guessInput.value="";
     guessInput.focus();
 
     updateScoreboard();
 });
 
-toggleDarkBtn.addEventListener("click", () => { document.body.classList.toggle("dark"); });
+// Dark mode
+toggleDarkBtn.addEventListener("click",()=>{ document.body.classList.toggle("dark"); });
 
-// Share results on WhatsApp
-shareBtn.addEventListener("click", () => {
-    if(scores.length === 0) { alert("No scores to share yet!"); return; }
-    let message = "🎯 Ultimate Multiplayer Guessing Game Scores:\n";
+// Share WhatsApp
+shareBtn.addEventListener("click",()=>{
+    if(scores.length===0){ alert("No scores to share!"); return; }
+    let message="🎯 Ultimate Multiplayer Guessing Game Scores:\n";
     scores.forEach((s,i)=>{
-        message += `${i+1}. ${s.player} | ${s.difficulty} | Attempts: ${s.attempts} | Time: ${s.time}s\n`;
+        message+=`${i+1}. ${s.player} | ${s.difficulty} | Attempts: ${s.attempts} | Time: ${s.time}s\n`;
     });
-    const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappURL, "_blank");
+    const whatsappURL=`https://wa.me/?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL,"_blank");
 });
 
-function updateScoreboard() {
-    scoreboardBody.innerHTML = "";
+// Scoreboard update
+function updateScoreboard(){
+    scoreboardBody.innerHTML="";
     players.forEach((p,i)=>{
-        const tr = document.createElement("tr");
-        const playerScore = scores.find(s => s.player === p);
-        tr.innerHTML = `<td>${i+1}</td>
-                        <td>${p}</td>
-                        <td>${playerScore ? playerScore.difficulty : '-'}</td>
-                        <td>${playerScore ? playerScore.attempts : '-'}</td>
-                        <td>${playerScore ? playerScore.time : '-'}</td>`;
-        if(i === currentPlayerIndex) tr.classList.add("current");
+        const tr=document.createElement("tr");
+        const playerScore = scores.find(s=>s.player===p);
+        tr.innerHTML=`<td>${i+1}</td>
+                        <td><span class="player-badge">${p}${playerScore?" 🏆":""}</span></td>
+                        <td>${playerScore?playerScore.difficulty:'-'}</td>
+                        <td>${playerScore?playerScore.attempts:'-'}</td>
+                        <td>${playerScore?playerScore.time:'-'}</td>`;
+        if(i===currentPlayerIndex) tr.classList.add("current-row");
         scoreboardBody.appendChild(tr);
     });
+}
+
+// Confetti effect
+function launchConfetti(){
+    for(let i=0;i<80;i++){
+        const confetti = document.createElement("div");
+        confetti.className="confetti";
+        confetti.style.left=Math.random()*100+"vw";
+        confetti.style.backgroundColor=`hsl(${Math.random()*360},70%,60%)`;
+        confetti.style.width=confetti.style.height=(5+Math.random()*5)+"px";
+        confetti.style.animationDuration=(1+Math.random()*2)+"s";
+        document.body.appendChild(confetti);
+        setTimeout(()=>confetti.remove(),3000);
+    }
 }
 </script>
 
