@@ -3,21 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game</title>
+<title>Eska's Multiplayer Guessing Game - Sophisticated</title>
 <style>
 :root {
-    --bg-light: #e0e0e0;
-    --text-light: #222;
-    --metal-gradient: linear-gradient(145deg, #ffffff, #d1d1d1, #a0a0a0);
-    --accent-gradient: linear-gradient(135deg, #ffd700, #ffa500);
+    --bg-light: #f2f2f2;
+    --text-color: #222;
+    --metal-gradient: linear-gradient(145deg, #ffffff, #d0d0d0, #a8a8a8);
+    --button-gradient: linear-gradient(145deg, #c0c0c0, #a0a0a0);
     --correct: #4caf50;
-    --wrong: #ff5722;
+    --wrong: #ff7043;
+    --tile-bg: linear-gradient(145deg, #e8e8e8, #c8c8c8);
+    --tile-current-border: #007acc;
 }
 body {
     margin:0;
     font-family: 'Segoe UI', sans-serif;
     background-color: var(--bg-light);
-    color: var(--text-light);
+    color: var(--text-color);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -26,13 +28,13 @@ body {
 header {
     text-align:center;
     padding:20px;
-    background: var(--accent-gradient);
+    background: var(--metal-gradient);
     color:#222;
     width:100%;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    border-bottom:2px solid #999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-bottom:1px solid #999;
 }
-h1 { margin:0; font-size:1.8rem; text-shadow: 1px 1px 2px #999; }
+h1 { margin:0; font-size:1.8rem; }
 .container { padding:15px; width:95%; max-width:600px; }
 .input-row { margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 input[type="number"], input[type="text"], select {
@@ -40,10 +42,10 @@ input[type="number"], input[type="text"], select {
     padding:12px;
     flex:1 1 130px;
     min-width:120px;
-    border-radius:16px;
-    border:2px solid #999;
+    border-radius:12px;
+    border:1px solid #999;
     background: var(--metal-gradient);
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2) inset;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.2) inset;
 }
 input[type="number"] { min:1; step:1; } 
 button {
@@ -51,15 +53,15 @@ button {
     padding:16px 20px;
     cursor:pointer;
     border:none;
-    background: var(--accent-gradient);
+    background: var(--button-gradient);
     color:#222;
-    border-radius:16px;
+    border-radius:12px;
     flex:1 1 130px;
     min-width:120px;
     transition: transform 0.15s, box-shadow 0.15s;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
 }
-button:hover { transform:scale(1.05); box-shadow: 3px 3px 8px rgba(0,0,0,0.4); }
+button:hover { transform:scale(1.05); box-shadow: 3px 3px 8px rgba(0,0,0,0.3); }
 .feedback { margin-top:10px; font-weight:bold; font-size:1.2rem; text-align:center; min-height:1.5em; }
 .stats { margin-top:8px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1rem; }
 #playerTiles { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:20px; }
@@ -68,22 +70,22 @@ button:hover { transform:scale(1.05); box-shadow: 3px 3px 8px rgba(0,0,0,0.4); }
     min-width:100px;
     max-width:150px;
     padding:20px;
-    border-radius:20px;
-    background: linear-gradient(145deg, #ffffff, #d1d1d1, #a0a0a0);
+    border-radius:16px;
+    background: var(--tile-bg);
     font-weight:bold;
     text-align:center;
     font-size:1.2rem;
     cursor:pointer;
     user-select:none;
-    transition: transform 0.25s, box-shadow 0.25s;
-    box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.25s, box-shadow 0.25s, border 0.25s;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
 }
-.player-tile.current { border:3px solid #ff9800; transform:scale(1.05); box-shadow: 3px 3px 10px rgba(0,0,0,0.4);}
-.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.08); box-shadow: 3px 3px 12px rgba(0,0,0,0.5); }
+.player-tile.current { border:3px solid var(--tile-current-border); transform:scale(1.03);}
+.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.05);}
 table { width:100%; margin-top:15px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; }
-th, td { border:2px solid #999; padding:10px; text-align:center; font-size:1rem; }
-th { background: var(--accent-gradient); color:#222; }
-tr.current-row { background: #ffd700; font-weight:bold; }
+th, td { border:1px solid #999; padding:10px; text-align:center; font-size:1rem; }
+th { background: #b0b0b0; color:#222; }
+tr.current-row { background: #c0e0ff; font-weight:bold; }
 tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 @media(max-width:500px){
     input[type="number"], input[type="text"], select, button {
@@ -91,11 +93,7 @@ tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
         padding:12px;
         min-width:100px;
     }
-    .player-tile {
-        font-size:1rem;
-        padding:16px;
-        min-width:90px;
-    }
+    .player-tile { font-size:1rem; padding:16px; min-width:90px; }
     table th, table td { font-size:0.9rem; padding:8px; }
 }
 </style>
@@ -103,7 +101,7 @@ tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 <body>
 
 <header>
-<h1>Eska's Multiplayer Guessing Game</h1>
+<h1>🎯 Eska's Multiplayer Guessing Game</h1>
 </header>
 
 <div class="container">
@@ -144,6 +142,7 @@ tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 </div>
 
 <script>
+// JavaScript logic remains same as last rollover version, using playerSecrets and currentPlayerIndex
 let attempts, timerInterval, secondsElapsed, maxNumber;
 let players=[], currentPlayerIndex=0, scores=[], winnerDeclared=false;
 let playerSecrets={}, playerAttempts={};
@@ -203,7 +202,6 @@ function renderPlayerTiles(){
         div.textContent=p;
         if(playerSecrets[p]===0) div.classList.add("winner");
         div.addEventListener("click",()=>{ 
-            // allow selection only if player is current and unfinished
             if(i!==currentPlayerIndex || playerSecrets[p]===0) return;
             document.querySelector(".player-tile.current")?.classList.remove("current");
             div.classList.add("current");
@@ -261,9 +259,8 @@ guessBtn.addEventListener("click",()=>{
             attempts: playerAttempts[currentPlayer],
             time: secondsElapsed
         });
-        playerSecrets[currentPlayer]=0; // mark finished
+        playerSecrets[currentPlayer]=0;
 
-        // move to next unfinished player
         if(players.every(p => playerSecrets[p]===0)){
             clearInterval(timerInterval);
             feedback.textContent="✅ All players finished! Click Start Game to play again.";
@@ -275,7 +272,7 @@ guessBtn.addEventListener("click",()=>{
         }
     } else {
         feedback.textContent=guess<playerSecrets[currentPlayer]?"Higher!":"Lower!";
-        feedback.style.color="#ff5722";
+        feedback.style.color=var(--wrong);
     }
 
     renderPlayerTiles();
