@@ -3,13 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eska's Multiplayer Guessing Game</title>
+<title>Arcade Tile Multiplayer Guessing Game</title>
 <style>
 :root {
     --bg-light: #f0f0f5;
-    --bg-dark: #1c1c1c;
     --text-light: #212121;
-    --text-dark: #e0e0e0;
     --accent-gradient: linear-gradient(145deg, #d1d1d1, #ffffff, #a0a0a0);
     --correct: #4caf50;
     --wrong: #ff5722;
@@ -25,7 +23,6 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    transition: background-color 0.3s, color 0.3s;
 }
 header {
     text-align:center;
@@ -40,13 +37,7 @@ h1 { margin:0; font-size:1.8rem; }
 .container { padding:15px; max-width:500px; width:95%; }
 
 /* Inputs & Buttons */
-.input-row {
-    margin-top:10px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-    justify-content:center;
-}
+.input-row { margin-top:10px; display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
 input[type="number"], input[type="text"], select {
     font-size:1.2rem;
     padding:12px;
@@ -55,7 +46,6 @@ input[type="number"], input[type="text"], select {
     border-radius:12px;
     border:1px solid #999;
     background: linear-gradient(145deg, #ffffff, #d0d0d0);
-    box-shadow: inset 2px 2px 6px rgba(0,0,0,0.15);
 }
 button {
     font-size:1.2rem;
@@ -67,35 +57,16 @@ button {
     border-radius:12px;
     flex:1 1 120px;
     min-width:120px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.4);
-    transition: transform 0.1s, box-shadow 0.2s;
+    transition: transform 0.1s;
 }
-button:hover { transform:scale(1.05); box-shadow: 4px 4px 14px rgba(0,0,0,0.6); }
+button:hover { transform:scale(1.05); }
 
 /* Feedback & Stats */
-.feedback {
-    margin-top:10px;
-    font-weight:bold;
-    font-size:1.3rem;
-    text-align:center;
-    min-height:1.5em;
-}
-.stats {
-    margin-top:10px;
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:space-between;
-    font-size:1rem;
-}
+.feedback { margin-top:10px; font-weight:bold; font-size:1.3rem; text-align:center; min-height:1.5em; }
+.stats { margin-top:10px; display:flex; flex-wrap:wrap; justify-content:space-between; font-size:1rem; }
 
-/* Player Tiles (Arcade Buttons) */
-#playerTiles {
-    display:flex;
-    flex-wrap:wrap;
-    gap:12px;
-    justify-content:center;
-    margin-top:20px;
-}
+/* Player Tiles */
+#playerTiles { display:flex; flex-wrap:wrap; gap:12px; justify-content:center; margin-top:20px; }
 .player-tile {
     flex:1 1 120px;
     min-width:100px;
@@ -103,63 +74,34 @@ button:hover { transform:scale(1.05); box-shadow: 4px 4px 14px rgba(0,0,0,0.6); 
     padding:20px;
     border-radius:20px;
     background: linear-gradient(145deg, #e6e6e6, #ffffff, #c0c0c0);
-    box-shadow: 4px 4px 12px rgba(0,0,0,0.3), inset 1px 1px 5px rgba(255,255,255,0.3);
     font-weight:bold;
     text-align:center;
     font-size:1.2rem;
-    color:#212121;
-    position:relative;
-    transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
     cursor:pointer;
+    user-select:none;
+    transition: transform 0.2s;
 }
-.player-tile.current {
-    border:3px solid #999;
-    animation: shimmer 2s infinite linear, bounce 1s infinite alternate;
-    background: linear-gradient(145deg, #f0f0f0, #ffffff, #d0d0d0);
-}
-.player-tile.winner {
-    animation: flash 1s infinite alternate, pop 0.5s ease forwards;
-    color:#fff;
-    background: linear-gradient(45deg, #4caf50, #81c784, #4caf50);
-}
+.player-tile.current { border:3px solid #999; transform:scale(1.05); }
+.player-tile.winner { background:#4caf50; color:#fff; transform:scale(1.1); }
 
-/* Animations */
-@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-@keyframes flash { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-@keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
-@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.25); } 100% { transform: scale(1); } }
-
-/* Metallic 3D Scoreboard */
-table { width:100%; margin-top:15px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);}
-th, td { border:1px solid #999; padding:12px; text-align:center; font-size:1rem; transition: transform 0.2s, box-shadow 0.2s; }
-th { background: linear-gradient(145deg, #c0c0c0, #e0e0e0, #b0b0b0); color:#212121; text-shadow:1px 1px 2px #fff; }
-tr { background: linear-gradient(145deg, #e0e0e0, #f5f5f5, #d0d0d0);}
-tr.current-row { animation: shimmer 2s infinite linear, pulse 1s infinite alternate; background: linear-gradient(145deg, #f0f0f0, #ffffff, #d0d0d0);}
-tr.current-row:hover { transform: scale(1.02); box-shadow: 0 0 12px #b0b0b0; }
-tr.winner-row { background: linear-gradient(45deg, #4caf50, #81c784) !important; color:#fff; font-weight:bold; }
-
-/* Dark Mode */
-.dark { background-color: var(--bg-dark); color: var(--text-dark); }
-.dark th { background-color: #424242; color:#e0e0e0; }
-.dark input, .dark select { background:#333; color:#e0e0e0; border:1px solid #555; }
-
-/* Confetti */
-.confetti { position: fixed; top: 0; left: 0; width: 10px; height: 10px; pointer-events: none; z-index: 9999; opacity: 0.8; border-radius: 50%; animation: fall linear forwards; }
-@keyframes fall { 0% { transform: translateY(0) rotate(0deg); opacity:1; } 100% { transform: translateY(100vh) rotate(720deg); opacity:0; } }
+/* Scoreboard */
+table { width:100%; margin-top:15px; border-collapse: collapse; overflow-x:auto; display:block; border-radius:12px; }
+th, td { border:1px solid #999; padding:12px; text-align:center; font-size:1rem; }
+th { background: linear-gradient(145deg, #c0c0c0, #e0e0e0, #b0b0b0); color:#212121; }
+tr.current-row { background: #ddd; }
+tr.winner-row { background: #4caf50; color:#fff; font-weight:bold; }
 </style>
 </head>
 <body>
 
 <header>
-<h1>🎮 Arcade Tile Multiplayer Guessing Game</h1>
+<h1>Eska's Multiplayer Guessing Game</h1>
 </header>
 
 <div class="container">
 
-<label for="playerNames">Enter Player Names (comma separated):</label>
-<input type="text" id="playerNames" placeholder="e.g. Alice,Bob,Charlie">
+<input type="text" id="playerNames" placeholder="Enter player names, e.g. Alice,Bob,Charlie">
 
-<label for="difficulty">Select Difficulty:</label>
 <select id="difficulty">
     <option value="10">Easy (1-10)</option>
     <option value="50">Medium (1-50)</option>
@@ -170,11 +112,10 @@ tr.winner-row { background: linear-gradient(45deg, #4caf50, #81c784) !important;
     <button id="startBtn" style="flex:1 1 100%;">Start Game</button>
 </div>
 
-<!-- Player Tiles -->
 <div id="playerTiles"></div>
 
 <div class="input-row">
-    <input type="number" id="guessInput" placeholder="Your guess" min="1">
+    <input type="number" id="guessInput" placeholder="Your guess">
     <button id="guessBtn">Guess</button>
 </div>
 
@@ -183,12 +124,6 @@ tr.winner-row { background: linear-gradient(45deg, #4caf50, #81c784) !important;
 <div class="stats">
     <span id="attempts">Attempts: 0</span>
     <span id="timer">Time: 0s</span>
-</div>
-
-<div class="input-row" style="margin-top:10px;">
-    <button id="playAgainBtn">Play Again</button>
-    <button id="toggleDarkBtn">Toggle Dark Mode</button>
-    <button id="shareBtn">Share on WhatsApp</button>
 </div>
 
 <table id="scoreboard">
@@ -201,12 +136,8 @@ tr.winner-row { background: linear-gradient(45deg, #4caf50, #81c784) !important;
 </div>
 
 <script>
-// JS logic with clickable tiles
 let secretNumber, attempts, timerInterval, secondsElapsed, maxNumber;
-let players = [];
-let currentPlayerIndex = 0;
-let scores = [];
-let winnerDeclared = false;
+let players=[], currentPlayerIndex=0, scores=[], winnerDeclared=false;
 
 const playerNamesInput = document.getElementById("playerNames");
 const guessInput = document.getElementById("guessInput");
@@ -216,13 +147,10 @@ const feedback = document.getElementById("feedback");
 const attemptsSpan = document.getElementById("attempts");
 const timerSpan = document.getElementById("timer");
 const difficultySelect = document.getElementById("difficulty");
-const playAgainBtn = document.getElementById("playAgainBtn");
-const toggleDarkBtn = document.getElementById("toggleDarkBtn");
-const shareBtn = document.getElementById("shareBtn");
 const scoreboardBody = document.querySelector("#scoreboard tbody");
 const playerTilesDiv = document.getElementById("playerTiles");
 
-function startGame() {
+function startGame(){
     const names = playerNamesInput.value.split(',').map(n=>n.trim()).filter(n=>n);
     if(names.length<1){ alert("Enter at least 1 player!"); return; }
     players = names;
@@ -231,9 +159,6 @@ function startGame() {
 
     maxNumber=parseInt(difficultySelect.value);
     secretNumber=Math.floor(Math.random()*maxNumber)+1;
-
-    guessInput.max=maxNumber;
-    guessInput.min=1;
 
     attempts=0;
     secondsElapsed=0;
@@ -255,17 +180,14 @@ function renderPlayerTiles(){
     players.forEach((p,i)=>{
         const div=document.createElement("div");
         div.className="player-tile"+(i===currentPlayerIndex?" current":"");
-        div.id="playerTile"+i;
         div.textContent=p;
-
-        div.addEventListener("click", ()=>{
+        div.addEventListener("click",()=>{ 
             if(winnerDeclared) return;
-            document.getElementById("playerTile"+currentPlayerIndex).classList.remove("current");
-            currentPlayerIndex=i;
+            document.querySelector(".player-tile.current")?.classList.remove("current");
             div.classList.add("current");
+            currentPlayerIndex=i;
             feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
         });
-
         playerTilesDiv.appendChild(div);
     });
 }
@@ -274,7 +196,7 @@ startBtn.addEventListener("click", startGame);
 
 guessBtn.addEventListener("click",()=>{
     if(players.length===0){ alert("Click Start Game first!"); return; }
-    if(winnerDeclared){ alert("Game over! Click Play Again."); return; }
+    if(winnerDeclared){ alert("Game over! Click Start Game."); return; }
 
     const guess=parseInt(guessInput.value.trim());
     if(isNaN(guess)||guess<1||guess>maxNumber){
@@ -292,11 +214,12 @@ guessBtn.addEventListener("click",()=>{
         feedback.style.color="green";
         scores.push({player:currentPlayer,difficulty:difficultySelect.options[difficultySelect.selectedIndex].text,attempts,time:secondsElapsed});
         winnerDeclared=true;
+        document.querySelectorAll(".player-tile")[currentPlayerIndex].classList.add("winner");
         clearInterval(timerInterval);
-        document.getElementById("playerTile"+currentPlayerIndex).classList.add("winner");
-        launchConfetti();
-    }else if(guess<secretNumber){ feedback.textContent="Higher!"; feedback.style.color="#ff5722"; }
-    else{ feedback.textContent="Lower!"; feedback.style.color="#ff5722"; }
+    } else {
+        feedback.textContent=guess<secretNumber?"Higher!":"Lower!";
+        feedback.style.color="#ff5722";
+    }
 
     guessInput.value="";
     guessInput.focus();
@@ -304,43 +227,16 @@ guessBtn.addEventListener("click",()=>{
     updateScoreboard();
 });
 
-toggleDarkBtn.addEventListener("click",()=>{ document.body.classList.toggle("dark"); });
-
-shareBtn.addEventListener("click",()=>{
-    if(scores.length===0){ alert("No scores to share!"); return; }
-    let message="🎯 Ultimate Multiplayer Guessing Game Scores:\n";
-    scores.forEach((s,i)=>{ message+=`${i+1}. ${s.player} | ${s.difficulty} | Attempts: ${s.attempts} | Time: ${s.time}s\n`; });
-    const whatsappURL=`https://wa.me/?text=${encodeURIComponent(message)}`;
-    window.open(whatsappURL,"_blank");
-});
-
 function updateScoreboard(){
     scoreboardBody.innerHTML="";
     players.forEach((p,i)=>{
         const tr=document.createElement("tr");
-        const playerScore = scores.find(s=>s.player===p);
-        tr.innerHTML=`<td>${i+1}</td>
-                        <td>${p}${playerScore?" 🏆":""}</td>
-                        <td>${playerScore?playerScore.difficulty:'-'}</td>
-                        <td>${playerScore?playerScore.attempts:'-'}</td>
-                        <td>${playerScore?playerScore.time:'-'}</td>`;
+        const playerScore=scores.find(s=>s.player===p);
+        tr.innerHTML=`<td>${i+1}</td><td>${p}${playerScore?" 🏆":""}</td><td>${playerScore?playerScore.difficulty:'-'}</td><td>${playerScore?playerScore.attempts:'-'}</td><td>${playerScore?playerScore.time:'-'}</td>`;
         if(!winnerDeclared && i===currentPlayerIndex) tr.classList.add("current-row");
         if(playerScore && winnerDeclared) tr.classList.add("winner-row");
         scoreboardBody.appendChild(tr);
     });
-}
-
-function launchConfetti(){
-    for(let i=0;i<80;i++){
-        const confetti=document.createElement("div");
-        confetti.className="confetti";
-        confetti.style.left=Math.random()*100+"vw";
-        confetti.style.backgroundColor=`hsl(${Math.random()*360},70%,60%)`;
-        confetti.style.width=confetti.style.height=(5+Math.random()*5)+"px";
-        confetti.style.animationDuration=(1+Math.random()*2)+"s";
-        document.body.appendChild(confetti);
-        setTimeout(()=>confetti.remove(),3000);
-    }
 }
 </script>
 </body>
