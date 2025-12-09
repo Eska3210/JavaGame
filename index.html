@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Arcade Tile Multiplayer Guessing Game</title>
+<title>Eska's Multiplayer Guessing Game</title>
 <style>
 :root {
     --bg-light: #f0f0f5;
@@ -110,6 +110,7 @@ button:hover { transform:scale(1.05); box-shadow: 4px 4px 14px rgba(0,0,0,0.6); 
     color:#212121;
     position:relative;
     transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+    cursor:pointer;
 }
 .player-tile.current {
     border:3px solid #999;
@@ -122,7 +123,7 @@ button:hover { transform:scale(1.05); box-shadow: 4px 4px 14px rgba(0,0,0,0.6); 
     background: linear-gradient(45deg, #4caf50, #81c784, #4caf50);
 }
 
-/* Shimmer, Flash & Bounce Animations */
+/* Animations */
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes flash { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
 @keyframes bounce { 0% { transform: translateY(0); } 100% { transform: translateY(-6px); } }
@@ -150,7 +151,7 @@ tr.winner-row { background: linear-gradient(45deg, #4caf50, #81c784) !important;
 <body>
 
 <header>
-<h1>Eska's Multiplayer Guessing Game</h1>
+<h1>🎮 Arcade Tile Multiplayer Guessing Game</h1>
 </header>
 
 <div class="container">
@@ -200,7 +201,7 @@ tr.winner-row { background: linear-gradient(45deg, #4caf50, #81c784) !important;
 </div>
 
 <script>
-// JS logic same as previous, animations added via CSS classes
+// JS logic with clickable tiles
 let secretNumber, attempts, timerInterval, secondsElapsed, maxNumber;
 let players = [];
 let currentPlayerIndex = 0;
@@ -237,7 +238,7 @@ function startGame() {
     attempts=0;
     secondsElapsed=0;
 
-    feedback.textContent="Start guessing!";
+    feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
     attemptsSpan.textContent="Attempts: 0";
     timerSpan.textContent="Time: 0s";
     guessInput.value="";
@@ -256,6 +257,15 @@ function renderPlayerTiles(){
         div.className="player-tile"+(i===currentPlayerIndex?" current":"");
         div.id="playerTile"+i;
         div.textContent=p;
+
+        div.addEventListener("click", ()=>{
+            if(winnerDeclared) return;
+            document.getElementById("playerTile"+currentPlayerIndex).classList.remove("current");
+            currentPlayerIndex=i;
+            div.classList.add("current");
+            feedback.textContent=`${players[currentPlayerIndex]}'s turn!`;
+        });
+
         playerTilesDiv.appendChild(div);
     });
 }
@@ -287,12 +297,6 @@ guessBtn.addEventListener("click",()=>{
         launchConfetti();
     }else if(guess<secretNumber){ feedback.textContent="Higher!"; feedback.style.color="#ff5722"; }
     else{ feedback.textContent="Lower!"; feedback.style.color="#ff5722"; }
-
-    if(!winnerDeclared){
-        document.getElementById("playerTile"+currentPlayerIndex).classList.remove("current");
-        currentPlayerIndex=(currentPlayerIndex+1)%players.length;
-        document.getElementById("playerTile"+currentPlayerIndex).classList.add("current");
-    }
 
     guessInput.value="";
     guessInput.focus();
